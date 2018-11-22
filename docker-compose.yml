@@ -1,0 +1,15 @@
+---
+version: '3'
+services:
+  consumer_app:
+    build:
+      context: "."
+      dockerfile: "./consumer_app/Dockerfile"
+    ports:
+      - '8001:8001'
+  upstream_app:
+    build:
+      context: "."
+      dockerfile: "./upstream_app/Dockerfile"
+    ports:
+      - '8002:8002'
