@@ -46,3 +46,12 @@ func RespondJSON(w http.ResponseWriter, body interface{}) error {
 	w.Header().Set("content-type", "application/json")
 	return json.NewEncoder(w).Encode(body)
 }
+
+type errorRes struct {
+	Error string
+}
+
+func RespondErrorJSON(w http.ResponseWriter, statusCode int, err error) error {
+	w.WriteHeader(statusCode)
+	return RespondJSON(w, &errorRes{Error: err.Error()})
+}
