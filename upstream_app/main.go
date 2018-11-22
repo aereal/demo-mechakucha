@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -16,11 +17,30 @@ func main() {
 	}
 }
 
+type user struct {
+	Name string
+}
+
+type listUsersResponse struct {
+	Users []*user
+}
+
 func handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		fmt.Fprintln(w, `{"ok":true}`)
+	})
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		users := []*user{
+			&user{Name: "Kumiko"},
+			&user{Name: "Reina"},
+			&user{Name: "Haduki"},
+			&user{Name: "Sapphire"},
+		}
+		usersRes := &listUsersResponse{Users: users}
+		json.NewEncoder(w).Encode(&usersRes)
+		w.Header().Set("content-type", "application/json")
 	})
 	return mux
 }
