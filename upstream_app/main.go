@@ -39,8 +39,7 @@ func handler() http.Handler {
 			&user{Name: "Sapphire"},
 		}
 		usersRes := &listUsersResponse{Users: users}
-		json.NewEncoder(w).Encode(&usersRes)
-		w.Header().Set("content-type", "application/json")
+		webbase.RespondJSON(w, usersRes)
 	})
 	return mux
 }

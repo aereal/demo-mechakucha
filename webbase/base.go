@@ -2,6 +2,7 @@ package webbase
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -39,4 +40,9 @@ func graceful(server *http.Server, timeout time.Duration) {
 	if err := server.Shutdown(ctx); err != nil {
 		log.Printf("failed to shutdown: %v", err)
 	}
+}
+
+func RespondJSON(w http.ResponseWriter, body interface{}) error {
+	w.Header().Set("content-type", "application/json")
+	return json.NewEncoder(w).Encode(body)
 }
