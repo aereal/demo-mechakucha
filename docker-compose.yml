@@ -8,14 +8,27 @@ services:
     ports:
       - '8001:8001'
     links:
-      - upstream_app
+      - envoy
     depends_on:
-      - upstream_app
+      - envoy
     environment:
-      UPSTREAM_ORIGIN: "http://upstream_app:8002"
+      UPSTREAM_ORIGIN: "http://envoy:10000"
   upstream_app:
     build:
       context: "."
       dockerfile: "./upstream_app/Dockerfile"
     ports:
       - '8002:8002'
+  envoy:
+    image: "envoyproxy/envoy:latest"
+    ports:
+      - "10000:10000"
+      - "9901:9901"
+    volumes:
+      - "./envoy/envoy.yaml:/etc/envoy/envoy.yaml"
+    environment:
+      loglevel: info
+    links:
+      - upstream_app
+    depends_on:
+      - upstream_app

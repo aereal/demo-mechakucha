@@ -1,0 +1,57 @@
+---
+admin:
+  access_log_path: /dev/stderr
+  address:
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0
+      port_value: 9901
+static_resources:
+  listeners:
+    -
+      name: http_listener
+      address:
+        socket_address:
+          protocol: TCP
+          address: 0.0.0.0
+          port_value: 10000
+      filter_chains:
+        -
+          filters:
+            -
+              name: envoy.http_connection_manager
+              config:
+                stat_prefix: ingress_http
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    -
+                      name: local_service
+                      domains: ["*"]
+                      routes:
+                        -
+                          match:
+                            prefix: "/"
+                          route:
+                            host_rewrite: upstream
+                            cluster: upstream
+                http_filters:
+                  -
+                    name: envoy.router
+  clusters:
+    -
+      name: upstream
+      connect_timeout: 1.99s
+      type: LOGICAL_DNS
+      dns_lookup_family: V4_ONLY
+      lb_policy: ROUND_ROBIN
+      hosts:
+        -
+          socket_address:
+            address: upstream_app
+            port_value: 8002
+      circuit_breakers:
+        thresholds:
+          max_connections: 2
+          max_pending_requests: 2
+          max_retries: 1
