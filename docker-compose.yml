@@ -7,6 +7,12 @@ services:
       dockerfile: "./consumer_app/Dockerfile"
     ports:
       - '8001:8001'
+    links:
+      - upstream_app
+    depends_on:
+      - upstream_app
+    environment:
+      UPSTREAM_ORIGIN: "http://upstream_app:8002"
   upstream_app:
     build:
       context: "."
